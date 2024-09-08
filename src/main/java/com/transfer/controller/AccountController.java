@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/account")
 @RequiredArgsConstructor
@@ -38,11 +41,14 @@ public class AccountController {
         this.accountService.deposit(accountId, amount);
     }
 
-    @Operation(summary = "Get Account Balance")
-    @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json")})
+    @Operation(summary = "Get Balance by Account ID")
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Map.class), mediaType = "application/json")})
     @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
-    @GetMapping("/{accountId}/balance")
-    public double getBalance(@PathVariable Long accountId) throws ResourceNotFoundException {
-        return this.accountService.getBalance(accountId);
+    @GetMapping("/balance/{accountId}")
+    public Map<String, Double> getBalance(@PathVariable Long accountId) throws ResourceNotFoundException {
+        double balance = accountService.getBalance(accountId);
+        Map<String, Double> response = new HashMap<>();
+        response.put("balance", balance);
+        return response;
     }
 }

@@ -35,10 +35,10 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public double getBalance(Long accountId) throws ResourceNotFoundException {
-        Account account = this.accountRepository.findById(accountId).orElseThrow(() ->
-                new ResourceNotFoundException("Account not found")
-        );
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         return account.getBalance();
     }
 
