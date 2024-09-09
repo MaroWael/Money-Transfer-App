@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,8 +42,8 @@ public class TransactionController {
 
         List<TransactionResponseDTO> responseDTOs = transactions.stream().map(transaction -> {
             TransactionResponseDTO responseDTO = new TransactionResponseDTO();
-            responseDTO.setFromAccountId(transaction.getFromAccount().getId());
-            responseDTO.setToAccountId(transaction.getToAccount().getId());
+            responseDTO.setFromAccountNumber(transaction.getFromAccount().getAccountNumber());  // Use account number
+            responseDTO.setToAccountNumber(transaction.getToAccount().getAccountNumber());      // Use account number
             responseDTO.setFromAccountName(transaction.getFromAccount().getCustomer().getName());
             responseDTO.setToAccountName(transaction.getToAccount().getCustomer().getName());
             responseDTO.setAmount(transaction.getAmount());

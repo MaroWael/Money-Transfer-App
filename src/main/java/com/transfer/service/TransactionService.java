@@ -65,8 +65,8 @@ public class TransactionService {
 
         // Return response with transaction details
         TransactionResponseDTO responseDTO = new TransactionResponseDTO();
-        responseDTO.setFromAccountId(fromAccount.getId());
-        responseDTO.setToAccountId(toAccount.getId());
+        responseDTO.setFromAccountNumber(fromAccount.getAccountNumber()); // Use account number
+        responseDTO.setToAccountNumber(toAccount.getAccountNumber());     // Use account number
         responseDTO.setFromAccountName(fromAccount.getCustomer().getName());
         responseDTO.setToAccountName(toAccount.getCustomer().getName());
         responseDTO.setAmount(request.getAmount());

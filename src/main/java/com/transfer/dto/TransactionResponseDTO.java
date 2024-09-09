@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionResponseDTO {
-    private Long fromAccountId;
-    private Long toAccountId;
+    private String fromAccountNumber;
+    private String toAccountNumber;
     private String fromAccountName;
     private String toAccountName;
     private Double amount;
