@@ -36,5 +36,5 @@ public class Transaction {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date transactionDate = new Date(); // Ensure this field is initialized
+    private Date transactionDate = new Date();
 }

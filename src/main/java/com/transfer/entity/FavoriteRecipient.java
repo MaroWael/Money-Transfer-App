@@ -8,7 +8,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "favorite_recipient")
+@Table(name = "favorite_recipient", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"customer_id", "recipientAccountNumber"})
+})
 public class FavoriteRecipient {
 
     @Id

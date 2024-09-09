@@ -34,21 +34,21 @@ public class TransactionController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @Operation(summary = "Get Transaction History by Account Number")
+    @Operation(summary = "Get Transaction History by Account ID")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = TransactionResponseDTO.class), mediaType = "application/json")})
     @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
-    @GetMapping("/history/{accountNumber}")
-    public ResponseEntity<List<TransactionResponseDTO>> getTransactionHistory(@PathVariable String accountNumber) throws ResourceNotFoundException {
-        List<Transaction> transactions = transactionService.getTransactionHistory(accountNumber);
+    @GetMapping("/history/{accountId}")
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionHistory(@PathVariable Long accountId) throws ResourceNotFoundException {
+        List<Transaction> transactions = transactionService.getTransactionHistory(accountId);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<TransactionResponseDTO> responseDTOs = transactions.stream().map(transaction -> {
             TransactionResponseDTO responseDTO = new TransactionResponseDTO();
-            responseDTO.setMessage(String.format("Transaction from %s to %s of amount %.2f on %s",
-                    transaction.getFromAccount().getCustomer().getName(),
-                    transaction.getToAccount().getCustomer().getName(),
-                    transaction.getAmount(),
-                    dateFormat.format(transaction.getTransactionDate())));
+            responseDTO.setFromAccountId(transaction.getFromAccount().getId());
+            responseDTO.setToAccountId(transaction.getToAccount().getId());
+            responseDTO.setFromAccountName(transaction.getFromAccount().getCustomer().getName());
+            responseDTO.setToAccountName(transaction.getToAccount().getCustomer().getName());
+            responseDTO.setAmount(transaction.getAmount());
+            responseDTO.setTransactionDate(transaction.getTransactionDate().toInstant().toString()); // Format to ISO 8601
             return responseDTO;
         }).collect(Collectors.toList());
 

@@ -1,6 +1,8 @@
 package com.transfer.controller;
 
 import com.transfer.dto.AccountDTO;
+import com.transfer.dto.DepositRequestDTO;
+import com.transfer.dto.MessageResponseDTO;
 import com.transfer.exception.custom.ResourceNotFoundException;
 import com.transfer.exception.response.ErrorDetails;
 import com.transfer.service.IAccountService;
@@ -9,7 +11,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +41,9 @@ public class AccountController {
     @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json")})
     @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
     @PutMapping("/{accountId}/deposit")
-    public void deposit(@PathVariable Long accountId, @RequestParam Double amount) throws ResourceNotFoundException {
-        this.accountService.deposit(accountId, amount);
+    public ResponseEntity<MessageResponseDTO> deposit(@PathVariable Long accountId, @Valid @RequestBody DepositRequestDTO depositRequest) throws ResourceNotFoundException {
+        this.accountService.deposit(accountId, depositRequest.getAmount());
+        return ResponseEntity.ok(new MessageResponseDTO("Deposit done successfully"));
     }
 
     @Operation(summary = "Get Balance by Account ID")

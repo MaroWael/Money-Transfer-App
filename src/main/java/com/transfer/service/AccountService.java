@@ -24,12 +24,12 @@ public class AccountService implements IAccountService {
                 -> new ResourceNotFoundException("Account not found")).toDTO();
     }
 
-    @Override
     @Transactional
+    @Override
     public void deposit(Long accountId, Double amount) throws ResourceNotFoundException {
-        Account account = this.accountRepository.findById(accountId).orElseThrow(() ->
-                new ResourceNotFoundException("Account not found")
-        );
+        Account account = this.accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
     }

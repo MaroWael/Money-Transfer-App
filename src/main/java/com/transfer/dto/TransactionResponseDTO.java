@@ -8,5 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionResponseDTO {
-    private String message;
+    private Long fromAccountId;
+    private Long toAccountId;
+    private String fromAccountName;
+    private String toAccountName;
+    private Double amount;
+    private String transactionDate; // ISO 8601 format
 }

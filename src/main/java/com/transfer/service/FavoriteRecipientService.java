@@ -24,6 +24,11 @@ public class FavoriteRecipientService {
         Customer customer = customerRepository.findByEmail(customerUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
+        if (favoriteRecipientRepository.existsByRecipientAccountNumberAndCustomerEmail(
+                favoriteRecipientDTO.getRecipientAccountNumber(), customerUsername)) {
+            throw new ResourceNotFoundException("Favorite recipient already exists");
+        }
+
         FavoriteRecipient favoriteRecipient = FavoriteRecipient.builder()
                 .recipientName(favoriteRecipientDTO.getRecipientName())
                 .recipientAccountNumber(favoriteRecipientDTO.getRecipientAccountNumber())
@@ -52,10 +57,9 @@ public class FavoriteRecipientService {
 
     @Transactional
     public void deleteFavoriteRecipientByAccountNumber(String recipientAccountNumber) throws ResourceNotFoundException {
-        if (!favoriteRecipientRepository.findByRecipientAccountNumber(recipientAccountNumber).isPresent()) {
-            throw new ResourceNotFoundException("Favorite recipient not found");
-        }
+        FavoriteRecipient recipient = favoriteRecipientRepository.findByRecipientAccountNumber(recipientAccountNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Favorite recipient not found"));
 
-        favoriteRecipientRepository.deleteByRecipientAccountNumber(recipientAccountNumber);
+        favoriteRecipientRepository.delete(recipient);
     }
 }

@@ -1,6 +1,8 @@
 package com.transfer.controller;
 
+import com.transfer.dto.DeleteFavoriteRecipientRequestDTO;
 import com.transfer.dto.FavoriteRecipientDTO;
+import com.transfer.dto.MessageResponseDTO;
 import com.transfer.exception.custom.ResourceNotFoundException;
 import com.transfer.service.FavoriteRecipientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,10 +24,17 @@ public class FavoriteRecipientController {
 
     @Operation(summary = "Add a Favorite Recipient")
     @ApiResponse(responseCode = "200", description = "Favorite recipient added successfully")
-    @PostMapping
-    public FavoriteRecipientDTO addFavoriteRecipient(Authentication authentication, @Valid @RequestBody FavoriteRecipientDTO favoriteRecipientDTO) throws ResourceNotFoundException {
-        String username = authentication.getName();
-        return favoriteRecipientService.addFavoriteRecipient(username, favoriteRecipientDTO);
+    @ApiResponse(responseCode = "400", description = "Duplicate favorite recipient")
+    @PostMapping("/add")
+    public ResponseEntity<MessageResponseDTO> addFavoriteRecipient(Authentication authentication,
+                                                                   @Valid @RequestBody FavoriteRecipientDTO favoriteRecipientDTO) {
+        try {
+            String username = authentication.getName();
+            favoriteRecipientService.addFavoriteRecipient(username, favoriteRecipientDTO);
+            return ResponseEntity.ok(new MessageResponseDTO("Favorite recipient added successfully"));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(new MessageResponseDTO(e.getMessage()));
+        }
     }
 
     @Operation(summary = "Get all Favorite Recipients")
@@ -36,9 +45,16 @@ public class FavoriteRecipientController {
         return favoriteRecipientService.getFavoriteRecipients(username);
     }
 
-    @DeleteMapping("/account-number/{recipientAccountNumber}")
-    public ResponseEntity<String> deleteFavoriteRecipientByAccountNumber(@PathVariable String recipientAccountNumber) throws ResourceNotFoundException {
-        favoriteRecipientService.deleteFavoriteRecipientByAccountNumber(recipientAccountNumber);
-        return ResponseEntity.ok("Favorite recipient deleted successfully");
+    @Operation(summary = "Delete a Favorite Recipient")
+    @ApiResponse(responseCode = "200", description = "Favorite recipient deleted successfully")
+    @ApiResponse(responseCode = "400", description = "Favorite recipient not found")
+    @DeleteMapping("/delete")
+    public ResponseEntity<MessageResponseDTO> deleteFavoriteRecipient(@RequestBody DeleteFavoriteRecipientRequestDTO request) {
+        try {
+            favoriteRecipientService.deleteFavoriteRecipientByAccountNumber(request.getRecipientAccountNumber());
+            return ResponseEntity.ok(new MessageResponseDTO("Favorite recipient deleted successfully"));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(new MessageResponseDTO(e.getMessage()));
+        }
     }
 }

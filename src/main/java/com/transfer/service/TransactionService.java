@@ -63,17 +63,21 @@ public class TransactionService {
                 .build();
         transactionRepository.save(transaction);
 
-        // Return response with a message
+        // Return response with transaction details
         TransactionResponseDTO responseDTO = new TransactionResponseDTO();
-        responseDTO.setMessage("Transaction successful");
+        responseDTO.setFromAccountId(fromAccount.getId());
+        responseDTO.setToAccountId(toAccount.getId());
+        responseDTO.setFromAccountName(fromAccount.getCustomer().getName());
+        responseDTO.setToAccountName(toAccount.getCustomer().getName());
+        responseDTO.setAmount(request.getAmount());
+        responseDTO.setTransactionDate(transaction.getTransactionDate().toInstant().toString()); // Format to ISO 8601
         return responseDTO;
     }
 
-    public List<Transaction> getTransactionHistory(String accountNumber) throws ResourceNotFoundException {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
+    public List<Transaction> getTransactionHistory(Long accountId) throws ResourceNotFoundException {
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
         return transactionRepository.findByFromAccountOrToAccount(account, account);
     }
-
 }
