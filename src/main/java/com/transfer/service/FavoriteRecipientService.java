@@ -15,11 +15,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class FavoriteRecipientService {
+public class FavoriteRecipientService implements IFavoriteRecipientService {
 
     private final FavoriteRecipientRepository favoriteRecipientRepository;
     private final CustomerRepository customerRepository;
 
+    @Override
     public FavoriteRecipientDTO addFavoriteRecipient(String customerUsername, FavoriteRecipientDTO favoriteRecipientDTO) throws ResourceNotFoundException {
         Customer customer = customerRepository.findByEmail(customerUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
@@ -43,6 +44,7 @@ public class FavoriteRecipientService {
                 .build();
     }
 
+    @Override
     public List<FavoriteRecipientDTO> getFavoriteRecipients(String customerUsername) throws ResourceNotFoundException {
         Customer customer = customerRepository.findByEmail(customerUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
@@ -56,6 +58,7 @@ public class FavoriteRecipientService {
     }
 
     @Transactional
+    @Override
     public void deleteFavoriteRecipientByAccountNumber(String recipientAccountNumber) throws ResourceNotFoundException {
         FavoriteRecipient recipient = favoriteRecipientRepository.findByRecipientAccountNumber(recipientAccountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Favorite recipient not found"));

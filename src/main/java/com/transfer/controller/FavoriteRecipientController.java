@@ -4,7 +4,7 @@ import com.transfer.dto.DeleteFavoriteRecipientRequestDTO;
 import com.transfer.dto.FavoriteRecipientDTO;
 import com.transfer.dto.MessageResponseDTO;
 import com.transfer.exception.custom.ResourceNotFoundException;
-import com.transfer.service.FavoriteRecipientService;
+import com.transfer.service.IFavoriteRecipientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import java.util.List;
 @CrossOrigin
 public class FavoriteRecipientController {
 
-    private final FavoriteRecipientService favoriteRecipientService;
+    private final IFavoriteRecipientService favoriteRecipientService;
 
     @Operation(summary = "Add a Favorite Recipient")
     @ApiResponse(responseCode = "200", description = "Favorite recipient added successfully")

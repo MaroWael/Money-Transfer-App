@@ -18,12 +18,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TransactionService {
+public class TransactionService implements ITransactionService {
 
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
     @Transactional
+    @Override
     public TransactionResponseDTO transferMoney(TransactionRequestDTO request) throws ResourceNotFoundException {
         // Get the logged-in user's account
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -74,6 +75,7 @@ public class TransactionService {
         return responseDTO;
     }
 
+    @Override
     public List<Transaction> getTransactionHistory(Long accountId) throws ResourceNotFoundException {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));

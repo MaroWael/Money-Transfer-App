@@ -5,7 +5,7 @@ import com.transfer.dto.TransactionResponseDTO;
 import com.transfer.entity.Transaction;
 import com.transfer.exception.custom.ResourceNotFoundException;
 import com.transfer.exception.response.ErrorDetails;
-import com.transfer.service.TransactionService;
+import com.transfer.service.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private final ITransactionService transactionService;
 
     @Operation(summary = "Transfer money between accounts")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = TransactionResponseDTO.class), mediaType = "application/json")})
