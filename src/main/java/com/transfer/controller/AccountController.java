@@ -25,6 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Account Controller", description = "Account controller")
+@CrossOrigin
 public class AccountController {
 
     private final IAccountService accountService;

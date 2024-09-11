@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
+@CrossOrigin
 public class TransactionController {
 
     private final TransactionService transactionService;
