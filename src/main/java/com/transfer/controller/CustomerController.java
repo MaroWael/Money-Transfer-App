@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Customer Controller", description = "Customer controller")
+@CrossOrigin
 public class CustomerController {
 
     private final ICustomerService customerService;
