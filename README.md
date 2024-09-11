@@ -1,4 +1,4 @@
-Money Transfer API
+# Money Transfer API
 
 ## Overview
 
@@ -46,21 +46,10 @@ src/
 │       ├── application.properties  # Spring Boot configurations
 └── test/                           # Unit tests
 ```
-# Create a README file for the provided OpenAPI specification in text format.
 
-openapi_spec = """
-# Transfer Service API Documentation
 
 ## API Version: 1.0.0
 
-### Base URL: https://sha256-1f39a1226a97.onrender.com
-
-### Overview
-This is a sample Transfer Service API that allows customers to manage their accounts, conduct money transfers, and manage favorite recipients. Authentication is done via JWT tokens.
-
-### Endpoints
-
----
 
 #### Customer Controller
 
