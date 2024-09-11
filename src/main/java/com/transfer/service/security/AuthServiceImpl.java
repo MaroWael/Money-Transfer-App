@@ -48,16 +48,20 @@ public class AuthServiceImpl implements IAuthService {
                 .dateOfBirth(customerRequest.getDateOfBirth())
                 .build();
 
+        Customer savedCustomer = customerRepository.save(customer); // Save customer first to get customer ID
+
+
         Account account = Account.builder()
+                .id(customer.getId())
                 .balance(0.0)
                 .accountName("Bank Account")
                 .accountNumber(new SecureRandom().nextInt(1000000000) + "")
                 .customer(customer)
                 .build();
 
-        customer.getAccounts().add(account);
+        savedCustomer.setAccount(account);
 
-        Customer savedCustomer = customerRepository.save(customer);
+        customerRepository.save(savedCustomer);
 
         return savedCustomer.toResponse();
     }

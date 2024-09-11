@@ -9,10 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 
 
 @Entity
@@ -48,12 +45,9 @@ public class Customer {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Builder.Default
-    private Set<Account> accounts = new HashSet<>();
+    @OneToOne(mappedBy = "customer")
+    private Account account;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private Set<FavoriteRecipient> favoriteRecipients = new HashSet<>();
 
     public RegisterCustomerResponse toResponse() {
         return RegisterCustomerResponse.builder()
@@ -75,8 +69,6 @@ public class Customer {
                 .dateOfBirth(this.dateOfBirth)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
-                .accounts(this.accounts.stream().map(Account::toDTO)
-                        .collect(Collectors.toSet()))
                 .build();
     }
 
