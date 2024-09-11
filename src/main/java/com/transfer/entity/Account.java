@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -42,7 +41,8 @@ public class Account {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     public AccountDTO toDTO() {
