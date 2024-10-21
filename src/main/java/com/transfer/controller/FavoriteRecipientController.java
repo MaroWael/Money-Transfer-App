@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/favorites")
 @RequiredArgsConstructor
+@Validated
 @CrossOrigin
 public class FavoriteRecipientController {
 
@@ -51,7 +53,7 @@ public class FavoriteRecipientController {
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, description = "Favorite recipient deleted successfully")
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, description = "Favorite recipient not found")
     @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponseDTO> deleteFavoriteRecipient(@RequestBody DeleteFavoriteRecipientRequestDTO request) {
+    public ResponseEntity<MessageResponseDTO> deleteFavoriteRecipient(@RequestBody @Valid DeleteFavoriteRecipientRequestDTO request) {
         try {
             favoriteRecipientService.deleteFavoriteRecipientByAccountNumber(request.getRecipientAccountNumber());
             return ResponseEntity.ok(new MessageResponseDTO("Favorite recipient deleted successfully"));

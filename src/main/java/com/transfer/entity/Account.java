@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 public class Account {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -29,6 +30,7 @@ public class Account {
     @Column(nullable = false)
     private Double balance;
 
+    @Column(nullable = false)
     private String accountName;
 
     @Builder.Default
@@ -41,7 +43,7 @@ public class Account {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 

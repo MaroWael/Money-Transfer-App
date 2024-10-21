@@ -11,8 +11,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
+@Validated
 @CrossOrigin
 public class TransactionController {
 
@@ -29,7 +33,7 @@ public class TransactionController {
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, content = {@Content(schema = @Schema(implementation = TransactionResponseDTO.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @PostMapping("/transfer")
-    public ResponseEntity<TransactionResponseDTO> transferMoney(@RequestBody TransactionRequestDTO request) throws ResourceNotFoundException {
+    public ResponseEntity<TransactionResponseDTO> transferMoney(@RequestBody @Valid TransactionRequestDTO request) throws ResourceNotFoundException {
         TransactionResponseDTO responseDTO = transactionService.transferMoney(request);
         return ResponseEntity.ok(responseDTO);
     }
@@ -38,7 +42,7 @@ public class TransactionController {
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, content = {@Content(schema = @Schema(implementation = TransactionResponseDTO.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @GetMapping("/history/{accountId}")
-    public ResponseEntity<List<TransactionResponseDTO>> getTransactionHistory(@PathVariable Long accountId) throws ResourceNotFoundException {
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionHistory(@PathVariable @Positive Long accountId) throws ResourceNotFoundException {
         List<Transaction> transactions = transactionService.getTransactionHistory(accountId);
 
         if (transactions.isEmpty()) {

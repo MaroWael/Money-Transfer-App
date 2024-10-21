@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class CustomerController {
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, content = {@Content(schema = @Schema(implementation = CustomerDTO.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @GetMapping("/{customerId}")
-    public CustomerDTO getCustomerById(@PathVariable Long customerId) throws ResourceNotFoundException {
+    public CustomerDTO getCustomerById(@PathVariable @Positive Long customerId) throws ResourceNotFoundException {
         return this.customerService.getCustomerById(customerId);
     }
 
@@ -42,8 +43,8 @@ public class CustomerController {
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @PutMapping("update/{customerId}")
     public CustomerDTO updateCustomerProfile(
-            @PathVariable Long customerId,
-            @RequestBody UpdateCustomerDTO updateCustomerDTO) throws ResourceNotFoundException {
+            @PathVariable @Positive Long customerId,
+            @RequestBody @Valid UpdateCustomerDTO updateCustomerDTO) throws ResourceNotFoundException {
         return this.customerService.updateCustomerProfile(customerId, updateCustomerDTO);
     }
     @Operation(summary = "Change customer password")
@@ -51,7 +52,7 @@ public class CustomerController {
     @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @PutMapping("/{customerId}/change-password")
     public void changePassword(
-            @PathVariable Long customerId,
+            @PathVariable @Positive Long customerId,
             @RequestBody @Valid ChangePasswordDTO changePasswordDTO)
             throws ResourceNotFoundException, InvalidOldPasswordException {
         customerService.changeCustomerPassword(customerId, changePasswordDTO);

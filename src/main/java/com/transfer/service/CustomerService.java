@@ -31,13 +31,11 @@ public class CustomerService implements ICustomerService {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.CUSTOMER_NOT_FOUND.toString()));
 
-        // Update customer fields
         customer.setName(updateCustomerDTO.getName() != null ? updateCustomerDTO.getName() : customer.getName());
         customer.setEmail(updateCustomerDTO.getEmail() != null ? updateCustomerDTO.getEmail() : customer.getEmail());
         customer.setCountry(updateCustomerDTO.getCountry() != null ? updateCustomerDTO.getCountry() : customer.getCountry());
         customer.setDateOfBirth(updateCustomerDTO.getDateOfBirth() != null ? updateCustomerDTO.getDateOfBirth() : customer.getDateOfBirth());
 
-        // Save updated customer
         Customer updatedCustomer = customerRepository.save(customer);
 
         return updatedCustomer.toDTO();
