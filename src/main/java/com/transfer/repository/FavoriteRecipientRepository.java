@@ -1,6 +1,5 @@
 package com.transfer.repository;
 
-import com.transfer.entity.Customer;
 import com.transfer.entity.FavoriteRecipient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

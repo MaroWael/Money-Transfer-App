@@ -5,6 +5,7 @@ import com.transfer.dto.LoginResponseDTO;
 import com.transfer.dto.RegisterCustomerRequest;
 import com.transfer.dto.RegisterCustomerResponse;
 import com.transfer.exception.custom.CustomerAlreadyExistException;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface IAuthService {
 
@@ -25,4 +26,12 @@ public interface IAuthService {
      * @return login response @{@link LoginResponseDTO}
      */
     LoginResponseDTO login(LoginRequestDTO loginRequestDTO);
+
+    /**
+     * Parse the request
+     *
+     * @param request details
+     * @return login response @{@link String}
+     */
+    String parseJwtFromRequest(HttpServletRequest request);
 }

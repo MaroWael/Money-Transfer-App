@@ -1,5 +1,6 @@
 package com.transfer.service.security;
 
+import com.transfer.constants.ApplicationConstants;
 import com.transfer.dto.LoginRequestDTO;
 import com.transfer.dto.LoginResponseDTO;
 import com.transfer.dto.RegisterCustomerRequest;
@@ -8,6 +9,7 @@ import com.transfer.entity.Account;
 import com.transfer.entity.Customer;
 import com.transfer.exception.custom.CustomerAlreadyExistException;
 import com.transfer.repository.CustomerRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 
@@ -37,7 +40,7 @@ public class AuthServiceImpl implements IAuthService {
     public RegisterCustomerResponse register(RegisterCustomerRequest customerRequest) throws CustomerAlreadyExistException {
 
         if (Boolean.TRUE.equals(this.customerRepository.existsByEmail(customerRequest.getEmail()))) {
-            throw new CustomerAlreadyExistException("Customer with email " + customerRequest.getEmail() + " already exists");
+            throw new CustomerAlreadyExistException(ApplicationConstants.CUSTOMER_ALREADY_EXISTS + " " + customerRequest.getEmail());
         }
 
         Customer customer = Customer.builder()
@@ -54,7 +57,7 @@ public class AuthServiceImpl implements IAuthService {
         Account account = Account.builder()
                 .id(customer.getId())
                 .balance(0.0)
-                .accountName("Bank Account")
+                .accountName(ApplicationConstants.BANK_ACCOUNT.toString())
                 .accountNumber(new SecureRandom().nextInt(1000000000) + "")
                 .customer(customer)
                 .build();
@@ -82,9 +85,18 @@ public class AuthServiceImpl implements IAuthService {
         return LoginResponseDTO.builder()
                 .token(jwt)
                 .id(customerId)  // Add customer ID to response
-                .message("Login Successful")
+                .message(ApplicationConstants.LOGIN_SUCCESSFULLY.toString())
                 .status(HttpStatus.ACCEPTED)
-                .tokenType("Bearer")
+                .tokenType(ApplicationConstants.BEARER.toString())
                 .build();
+    }
+
+    @Override
+    public String parseJwtFromRequest(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+        return null;
     }
 }

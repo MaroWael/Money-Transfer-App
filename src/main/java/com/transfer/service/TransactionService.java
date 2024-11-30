@@ -1,5 +1,6 @@
 package com.transfer.service;
 
+import com.transfer.constants.ApplicationConstants;
 import com.transfer.dto.TransactionRequestDTO;
 import com.transfer.dto.TransactionResponseDTO;
 import com.transfer.entity.Account;
@@ -26,48 +27,41 @@ public class TransactionService implements ITransactionService {
     @Transactional
     @Override
     public TransactionResponseDTO transferMoney(TransactionRequestDTO request) throws ResourceNotFoundException {
-        // Get the logged-in user's account
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUsername = authentication.getName();  // Assuming username is the unique identifier
         Account fromAccount = accountRepository.findByCustomerUsername(loggedInUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Sender account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.SENDER_ACCOUNT_NOT_FOUND.toString()));
 
-        // Fetch receiver's account by account number
         Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
-                .orElseThrow(() -> new ResourceNotFoundException("Receiver account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.RECEIVER_ACCOUNT_NOT_FOUND.toString()));
 
-        // Validate recipient name matches the receiver's account
         if (!toAccount.getCustomer().getName().equals(request.getRecipientName())) {
-            throw new RuntimeException("Recipient name does not match the account");
+            throw new RuntimeException(ApplicationConstants.ERROR_RECIPIENT_NAME.toString());
         }
 
-        // Check for sufficient balance
         if (fromAccount.getBalance() < request.getAmount()) {
-            throw new RuntimeException("Insufficient funds in sender's account");
+            throw new RuntimeException(ApplicationConstants.INSUFFICIENT_FUNDS.toString());
         }
 
-        // Perform the transfer
         fromAccount.setBalance(fromAccount.getBalance() - request.getAmount());
         toAccount.setBalance(toAccount.getBalance() + request.getAmount());
 
-        // Save the updated accounts
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
 
-        // Save transaction history
         Transaction transaction = Transaction.builder()
                 .fromAccount(fromAccount)
                 .toAccount(toAccount)
                 .amount(request.getAmount())
                 .recipientName(request.getRecipientName())
-                .transactionDate(new Date()) // Set current date/time
+                .transactionDate(new Date())
                 .build();
         transactionRepository.save(transaction);
 
-        // Return response with transaction details
+
         TransactionResponseDTO responseDTO = new TransactionResponseDTO();
-        responseDTO.setFromAccountNumber(fromAccount.getAccountNumber()); // Use account number
-        responseDTO.setToAccountNumber(toAccount.getAccountNumber());     // Use account number
+        responseDTO.setFromAccountNumber(fromAccount.getAccountNumber());
+        responseDTO.setToAccountNumber(toAccount.getAccountNumber());
         responseDTO.setFromAccountName(fromAccount.getCustomer().getName());
         responseDTO.setToAccountName(toAccount.getCustomer().getName());
         responseDTO.setAmount(request.getAmount());
@@ -78,7 +72,7 @@ public class TransactionService implements ITransactionService {
     @Override
     public List<Transaction> getTransactionHistory(Long accountId) throws ResourceNotFoundException {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.ACCOUNT_NOT_FOUND.toString()));
 
         return transactionRepository.findByFromAccountOrToAccount(account, account);
     }

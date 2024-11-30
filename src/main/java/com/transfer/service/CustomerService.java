@@ -1,5 +1,6 @@
 package com.transfer.service;
 
+import com.transfer.constants.ApplicationConstants;
 import com.transfer.dto.ChangePasswordDTO;
 import com.transfer.dto.CustomerDTO;
 import com.transfer.dto.UpdateCustomerDTO;
@@ -21,22 +22,20 @@ public class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO getCustomerById(Long customerId) throws ResourceNotFoundException {
         return this.customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"))
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.CUSTOMER_NOT_FOUND.toString()))
                 .toDTO();
     }
 
     @Override
     public CustomerDTO updateCustomerProfile(Long customerId, UpdateCustomerDTO updateCustomerDTO) throws ResourceNotFoundException {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.CUSTOMER_NOT_FOUND.toString()));
 
-        // Update customer fields
         customer.setName(updateCustomerDTO.getName() != null ? updateCustomerDTO.getName() : customer.getName());
         customer.setEmail(updateCustomerDTO.getEmail() != null ? updateCustomerDTO.getEmail() : customer.getEmail());
         customer.setCountry(updateCustomerDTO.getCountry() != null ? updateCustomerDTO.getCountry() : customer.getCountry());
         customer.setDateOfBirth(updateCustomerDTO.getDateOfBirth() != null ? updateCustomerDTO.getDateOfBirth() : customer.getDateOfBirth());
 
-        // Save updated customer
         Customer updatedCustomer = customerRepository.save(customer);
 
         return updatedCustomer.toDTO();
@@ -51,11 +50,11 @@ public class CustomerService implements ICustomerService {
 
         // Fetch customer from the repository
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.CUSTOMER_NOT_FOUND.toString()));
 
         // Validate the old password
         if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), customer.getPassword())) {
-            throw new InvalidOldPasswordException("Old password is incorrect");
+            throw new InvalidOldPasswordException(ApplicationConstants.NOT_CORRECT_PASSWORD.toString());
         }
 
         // Update the password and save

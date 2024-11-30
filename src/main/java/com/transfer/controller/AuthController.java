@@ -1,5 +1,7 @@
 package com.transfer.controller;
 
+import com.transfer.constants.ApplicationConstants;
+import com.transfer.constants.BusinessConstants;
 import com.transfer.dto.LoginRequestDTO;
 import com.transfer.dto.LoginResponseDTO;
 import com.transfer.dto.RegisterCustomerRequest;
@@ -16,10 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,44 +32,36 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final IAuthService authService;
+    private final TokenBlacklist tokenBlacklist;
 
     @PostMapping("/register")
     @Operation(summary = "Register new Customer")
-    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = RegisterCustomerResponse.class), mediaType = "application/json")})
-    @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, content = {@Content(schema = @Schema(implementation = RegisterCustomerResponse.class), mediaType = BusinessConstants.APPLICATION_JSON)})
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     public RegisterCustomerResponse register(@RequestBody @Valid RegisterCustomerRequest customer) throws CustomerAlreadyExistException {
         return this.authService.register(customer);
     }
 
     @Operation(summary = "Login and generate JWT")
-    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = LoginResponseDTO.class), mediaType = "application/json")})
-    @ApiResponse(responseCode = "401", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, content = {@Content(schema = @Schema(implementation = LoginResponseDTO.class), mediaType = BusinessConstants.APPLICATION_JSON)})
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_401, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @PostMapping("/login")
     public LoginResponseDTO login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
         return this.authService.login(loginRequestDTO);
     }
 
-    @Autowired
-    private TokenBlacklist tokenBlacklist;
-
     @Operation(summary = "Logout customer", description = "Logout the customer by invalidating their JWT token.")
-    @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
-    @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = "application/json")})
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, content = {@Content(schema = @Schema(implementation = ErrorDetails.class), mediaType = BusinessConstants.APPLICATION_JSON)})
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
-        String jwt = parseJwtFromRequest(request);
+        String jwt = authService.parseJwtFromRequest(request);
         if (jwt != null) {
-            tokenBlacklist.addToken(jwt);  // Add the token to the blacklist
+            tokenBlacklist.addToken(jwt);
         }
-        SecurityContextHolder.clearContext();  // Clear the authentication context
-        return ResponseEntity.ok("You have been logged out successfully.");
+
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok(ApplicationConstants.LOGIN_SUCCESSFULLY.toString());
     }
 
-    private String parseJwtFromRequest(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
-        }
-        return null;
-    }
 }

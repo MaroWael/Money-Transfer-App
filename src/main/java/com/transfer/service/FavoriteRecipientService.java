@@ -1,5 +1,6 @@
 package com.transfer.service;
 
+import com.transfer.constants.ApplicationConstants;
 import com.transfer.dto.FavoriteRecipientDTO;
 import com.transfer.entity.Customer;
 import com.transfer.entity.FavoriteRecipient;
@@ -23,11 +24,11 @@ public class FavoriteRecipientService implements IFavoriteRecipientService {
     @Override
     public FavoriteRecipientDTO addFavoriteRecipient(String customerUsername, FavoriteRecipientDTO favoriteRecipientDTO) throws ResourceNotFoundException {
         Customer customer = customerRepository.findByEmail(customerUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.CUSTOMER_NOT_FOUND.toString()));
 
         if (favoriteRecipientRepository.existsByRecipientAccountNumberAndCustomerEmail(
                 favoriteRecipientDTO.getRecipientAccountNumber(), customerUsername)) {
-            throw new ResourceNotFoundException("Favorite recipient already exists");
+            throw new ResourceNotFoundException(ApplicationConstants.FAVORITE_RECIPIENT_ALREADY_EXIST.toString());
         }
 
         FavoriteRecipient favoriteRecipient = FavoriteRecipient.builder()
@@ -47,7 +48,7 @@ public class FavoriteRecipientService implements IFavoriteRecipientService {
     @Override
     public List<FavoriteRecipientDTO> getFavoriteRecipients(String customerUsername) throws ResourceNotFoundException {
         Customer customer = customerRepository.findByEmail(customerUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.CUSTOMER_NOT_FOUND.toString()));
 
         List<FavoriteRecipient> favoriteRecipients = favoriteRecipientRepository.findByCustomerId(customer.getId());
 
@@ -61,7 +62,7 @@ public class FavoriteRecipientService implements IFavoriteRecipientService {
     @Override
     public void deleteFavoriteRecipientByAccountNumber(String recipientAccountNumber) throws ResourceNotFoundException {
         FavoriteRecipient recipient = favoriteRecipientRepository.findByRecipientAccountNumber(recipientAccountNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Favorite recipient not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.FAVORITE_RECIPIENT_NOT_FOUND.toString()));
 
         favoriteRecipientRepository.delete(recipient);
     }

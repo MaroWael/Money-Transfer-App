@@ -1,5 +1,6 @@
 package com.transfer.controller;
 
+import com.transfer.constants.BusinessConstants;
 import com.transfer.dto.DeleteFavoriteRecipientRequestDTO;
 import com.transfer.dto.FavoriteRecipientDTO;
 import com.transfer.dto.MessageResponseDTO;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +20,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/favorites")
 @RequiredArgsConstructor
+@Validated
 @CrossOrigin
 public class FavoriteRecipientController {
 
     private final IFavoriteRecipientService favoriteRecipientService;
 
     @Operation(summary = "Add a Favorite Recipient")
-    @ApiResponse(responseCode = "200", description = "Favorite recipient added successfully")
-    @ApiResponse(responseCode = "400", description = "Duplicate favorite recipient")
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, description = "Favorite recipient added successfully")
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, description = "Duplicate favorite recipient")
     @PostMapping("/add")
     public ResponseEntity<MessageResponseDTO> addFavoriteRecipient(Authentication authentication,
                                                                    @Valid @RequestBody FavoriteRecipientDTO favoriteRecipientDTO) {
@@ -39,7 +42,7 @@ public class FavoriteRecipientController {
     }
 
     @Operation(summary = "Get all Favorite Recipients")
-    @ApiResponse(responseCode = "200", description = "List of favorite recipients")
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, description = "List of favorite recipients")
     @GetMapping
     public List<FavoriteRecipientDTO> getFavoriteRecipients(Authentication authentication) throws ResourceNotFoundException {
         String username = authentication.getName();
@@ -47,10 +50,10 @@ public class FavoriteRecipientController {
     }
 
     @Operation(summary = "Delete a Favorite Recipient")
-    @ApiResponse(responseCode = "200", description = "Favorite recipient deleted successfully")
-    @ApiResponse(responseCode = "400", description = "Favorite recipient not found")
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_200, description = "Favorite recipient deleted successfully")
+    @ApiResponse(responseCode = BusinessConstants.RESPONSE_CODE_400, description = "Favorite recipient not found")
     @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponseDTO> deleteFavoriteRecipient(@RequestBody DeleteFavoriteRecipientRequestDTO request) {
+    public ResponseEntity<MessageResponseDTO> deleteFavoriteRecipient(@RequestBody @Valid DeleteFavoriteRecipientRequestDTO request) {
         try {
             favoriteRecipientService.deleteFavoriteRecipientByAccountNumber(request.getRecipientAccountNumber());
             return ResponseEntity.ok(new MessageResponseDTO("Favorite recipient deleted successfully"));

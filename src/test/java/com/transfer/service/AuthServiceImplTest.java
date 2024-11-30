@@ -38,16 +38,10 @@ public class AuthServiceImplTest {
     private CustomerRepository customerRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private AuthenticationManager authenticationManager;
 
     @Mock
     private JwtUtils jwtUtils;
-
-    @Mock
-    private Authentication authentication;
 
     @Test
     void testRegisterSuccess() throws CustomerAlreadyExistException {

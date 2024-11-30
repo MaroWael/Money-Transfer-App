@@ -3,6 +3,8 @@ package com.transfer.entity;
 import com.transfer.dto.CustomerDTO;
 import com.transfer.dto.RegisterCustomerResponse;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,12 +27,15 @@ public class Customer {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 50)
     private String name;
 
     @Column(unique = true, nullable = false)
+    @Email
     private String email;
 
     @Column(nullable = false)
+    @Size(min = 8)
     private String password;
 
     @Column(nullable = false)
@@ -45,7 +50,7 @@ public class Customer {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "customer")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
     private Account account;
 
 
